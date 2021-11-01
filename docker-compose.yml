@@ -1,0 +1,38 @@
+version: "3"
+
+services:
+
+  wordpress:
+    image: wordpress:5.8.1-php7.4-fpm
+    environment:
+      WORDPRESS_DB_HOST: wordpress-db
+      WORDPRESS_DB_USER: exampleuser
+      WORDPRESS_DB_PASSWORD: examplepass
+      WORDPRESS_DB_NAME: exampledb
+    volumes:
+      - wordpress:/var/www/html
+  
+  wordpress-db:
+    image: mysql:5.7
+    environment:
+      MYSQL_DATABASE: exampledb
+      MYSQL_USER: exampleuser
+      MYSQL_PASSWORD: examplepass
+      MYSQL_RANDOM_ROOT_PASSWORD: '1'
+    volumes:
+      - wordpress-db:/var/lib/mysql
+
+  nginx:
+      build: .
+      ports:
+        - 80:80
+      environment:
+        WORDPRESS_HOST: wordpress
+        WORDPRESS_PORT: 9000
+      volumes:
+        - ./templates:/templates
+        - wordpress:/var/www/html
+
+volumes:
+  wordpress:
+  wordpress-db:
